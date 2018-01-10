@@ -97,31 +97,31 @@ class GlobalIdSpec extends WordSpec with Matchers with AwaitSupport {
         Map(
           "data" → Map(
             "allObjects" → List(
-              Map("id" → "VXNlcjox"),
-              Map("id" → "VXNlcjoy"),
-              Map("id" → "Q3VzdG9tUGhvdG86MQ=="),
-              Map("id" → "Q3VzdG9tUGhvdG86Mg=="),
-              Map("id" → "UG9zdDox"),
-              Map("id" → "UG9zdDoy")))))
+              Map("id" → "User:1"),
+              Map("id" → "User:2"),
+              Map("id" → "CustomPhoto:1"),
+              Map("id" → "CustomPhoto:2"),
+              Map("id" → "Post:1"),
+              Map("id" → "Post:2")))))
     }
 
     "Refetches the IDs" in {
       val Success(doc) = QueryParser.parse(
         """
           {
-            user: node(id: "VXNlcjox") {
+            user: node(id: "User:1") {
               id
               ... on User {
                 name
               }
             }
-            photo: node(id: "Q3VzdG9tUGhvdG86MQ==") {
+            photo: node(id: "CustomPhoto:1") {
               id
               ... on Photo {
                 width
               }
             }
-            post: node(id: "UG9zdDoy") {
+            post: node(id: "Post:2") {
               id
               ... on Post {
                 text
@@ -134,13 +134,13 @@ class GlobalIdSpec extends WordSpec with Matchers with AwaitSupport {
         Map(
           "data" → Map(
             "user" → Map(
-              "id" → "VXNlcjox",
+              "id" → "User:1",
               "name" → "John Doe"),
             "photo" → Map(
-              "id" → "Q3VzdG9tUGhvdG86MQ==",
+              "id" → "CustomPhoto:1",
               "width" → 300),
             "post" → Map(
-              "id" → "UG9zdDoy",
+              "id" → "Post:2",
               "text" → "ipsum"))))
     }
   }
@@ -155,11 +155,11 @@ class GlobalIdSpec extends WordSpec with Matchers with AwaitSupport {
     }
 
     "return None for IDs where the decoded value does not contain a colon" in {
-      GlobalId.fromGlobalId("UG9zdA==") shouldBe empty
+      GlobalId.fromGlobalId("Post") shouldBe empty
     }
 
     "return None for IDs where the decoded value does contain a colon at the end" in {
-      GlobalId.fromGlobalId("UG9zdDo=") shouldBe empty
+      GlobalId.fromGlobalId("Post:") shouldBe empty
     }
   }
 }

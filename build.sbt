@@ -1,10 +1,10 @@
 name := "sangria-relay"
-organization := "org.sangria-graphql"
-version := "1.3.4-SNAPSHOT"
+organization := "org.slackoverflow"
+version := "1.3.4"
 
 description := "Sangria Relay Support"
 homepage := Some(url("http://sangria-graphql.org"))
-licenses := Seq("Apache License, ASL Version 2.0" → url("http://www.apache.org/licenses/LICENSE-2.0"))
+licenses := Seq("Apache-2.0" → url("http://www.apache.org/licenses/LICENSE-2.0"))
 
 scalaVersion := "2.12.4"
 crossScalaVersions := Seq("2.11.11", "2.12.4")
@@ -27,11 +27,12 @@ libraryDependencies ++= Seq(
 publishMavenStyle := true
 publishArtifact in Test := false
 pomIncludeRepository := (_ ⇒ false)
-publishTo := Some(
-  if (version.value.trim.endsWith("SNAPSHOT"))
-    "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-  else
-    "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
+
+//publishTo := Some(
+//  if (version.value.trim.endsWith("SNAPSHOT"))
+//    "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+//  else
+//    "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
 
 resolvers += "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 

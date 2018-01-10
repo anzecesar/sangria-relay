@@ -1,6 +1,5 @@
 package sangria.relay
 
-import sangria.relay.util.Base64
 import sangria.schema.{IDType, ScalarAlias}
 import sangria.validation.{ValueCoercionViolation, Violation}
 
@@ -15,21 +14,15 @@ object GlobalId {
    * Takes a type name and an ID specific to that type name, and returns a
    * "global ID" that is unique among all types.
    */
-  def toGlobalId(typeName: String, id: String): String = Base64.encode(s"$typeName:$id")
+  def toGlobalId(typeName: String, id: String): String = s"$typeName:$id"
 
   /**
    * Takes the "global ID" created by toGlobalID, and returns the type name and ID
    * used to create it.
    */
-  def fromGlobalId(globalId: String) = {
-    Base64.decode(globalId) flatMap { decoded =>
-      val idx = decoded.indexOf(":")
-
-      if (idx == -1 || idx == decoded.length - 1)
-        None
-      else
-        Some(GlobalId(decoded.substring(0, idx), decoded.substring(idx + 1)))
-    }
+  def fromGlobalId(globalId: String) = globalId.split(":").toList match {
+    case typeName :: id :: Nil => Some(GlobalId(typeName, id))
+    case _                     => None
   }
 
   def unapply(globalId: String) = fromGlobalId(globalId)

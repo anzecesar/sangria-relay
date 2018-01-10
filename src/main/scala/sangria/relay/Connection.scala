@@ -77,9 +77,11 @@ object Connection {
         resolve = _.value.endCursor)
     ))
 
-  val CursorPrefix = "arrayconnection:"
+  private val CursorPrefix = "arrayconnection:"
 
   def empty[T] = DefaultConnection(PageInfo.empty, Vector.empty[Edge[T]])
+
+  //def connectionForPage[T](page: Future[Seq[T]], args: ConnectionArgs )
 
   def connectionFromFutureSeq[T](seq: Future[Seq[T]], args: ConnectionArgs)(implicit ec: ExecutionContext): Future[Connection[T]] =
     seq map (connectionFromSeq(_, args))
@@ -91,24 +93,22 @@ object Connection {
     seq map (connectionFromSeq(_, args, sliceInfo))
 
   def connectionFromSeq[T](seqSlice: Seq[T], args: ConnectionArgs, sliceInfo: SliceInfo): Connection[T] = {
-    import args._
-    import sliceInfo._
 
-    first.foreach(f ⇒ if (f < 0) throw new ConnectionArgumentValidationError("Argument 'first' must be a non-negative integer"))
-    last.foreach(l ⇒ if (l < 0) throw new ConnectionArgumentValidationError("Argument 'last' must be a non-negative integer"))
+    args.first.foreach(f ⇒ if (f < 0) throw new ConnectionArgumentValidationError("Argument 'first' must be a non-negative integer"))
+    args.last.foreach(l ⇒ if (l < 0) throw new ConnectionArgumentValidationError("Argument 'last' must be a non-negative integer"))
 
-    val sliceEnd = sliceStart + seqSlice.size
-    val beforeOffset = getOffset(before, size)
-    val afterOffset = getOffset(after, -1)
+    val sliceEnd = sliceInfo.sliceStart + seqSlice.size
+    val beforeOffset = getOffset(args.before, sliceInfo.size)
+    val afterOffset = getOffset(args.after, -1)
 
-    val startOffset = math.max(math.max(sliceStart - 1, afterOffset), -1) + 1
-    val endOffset = math.min(math.min(sliceEnd, beforeOffset), size)
+    val startOffset = math.max(math.max(sliceInfo.sliceStart - 1, afterOffset), -1) + 1
+    val endOffset = math.min(math.min(sliceEnd, beforeOffset), sliceInfo.size)
 
-    val actualEndOffset = first.fold(endOffset)(f ⇒ math.min(endOffset, startOffset + f))
-    val actualStartOffset = last.fold(startOffset)(l ⇒ math.max(startOffset, actualEndOffset - l))
+    val actualEndOffset = args.first.fold(endOffset)(f ⇒ math.min(endOffset, startOffset + f))
+    val actualStartOffset = args.last.fold(startOffset)(l ⇒ math.max(startOffset, actualEndOffset - l))
 
     // If supplied slice is too large, trim it down before mapping over it.
-    val slice = seqSlice.slice(math.max(actualStartOffset - sliceStart, 0), seqSlice.size - (sliceEnd - actualEndOffset))
+    val slice = seqSlice.slice(math.max(actualStartOffset - sliceInfo.sliceStart, 0), seqSlice.size - (sliceEnd - actualEndOffset))
 
     val edges = slice.zipWithIndex.map {
       case (value, index) ⇒ Edge(value, offsetToCursor(actualStartOffset + index))
@@ -116,20 +116,20 @@ object Connection {
 
     val firstEdge = edges.headOption
     val lastEdge = edges.lastOption
-    val lowerBound = after.fold(0)(_ ⇒ afterOffset + 1)
-    val upperBound = before.fold(size)(_ ⇒ beforeOffset)
+    val lowerBound = args.after.fold(0)(_ ⇒ afterOffset + 1)
+    val upperBound = args.before.fold(sliceInfo.size)(_ ⇒ beforeOffset)
 
     DefaultConnection(
       PageInfo(
         startCursor = firstEdge map (_.cursor),
         endCursor = lastEdge map (_.cursor),
-        hasPreviousPage = last.fold(false)(_ ⇒ actualStartOffset > lowerBound),
-        hasNextPage = first.fold(false)(_ ⇒ actualEndOffset < upperBound)),
+        hasPreviousPage = args.last.fold(false)(_ ⇒ actualStartOffset > lowerBound),
+        hasNextPage = args.first.fold(false)(_ ⇒ actualEndOffset < upperBound)),
       edges
     )
   }
 
-  def cursorForObjectInConnection[T, E](coll: Seq[T], obj: E) = {
+  def cursorForObjectInConnection[T, E](coll: Seq[T], obj: E): Option[String] = {
     val idx = coll.indexOf(obj)
 
     if (idx  >= 0) Some(offsetToCursor(idx)) else None
@@ -141,7 +141,10 @@ object Connection {
   def offsetToCursor(offset: Int): String = Base64.encode(CursorPrefix + offset)
 
   def cursorToOffset(cursor: String): Option[Int] =
-    GlobalId.fromGlobalId(cursor).flatMap(id ⇒ Try(id.id.toInt).toOption)
+    Base64.decode(cursor).flatMap(GlobalId.fromGlobalId) match {
+      case Some(id) => Try(id.id.toInt).toOption
+      case None     => Try(cursor.toInt).toOption
+    }
 }
 
 case class SliceInfo(sliceStart: Int, size: Int)

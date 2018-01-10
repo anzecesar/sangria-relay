@@ -27,7 +27,7 @@ class StarWarsObjectIdentificationSpec extends WordSpec with Matchers with Await
           Map(
             "data" → Map(
               "rebels" → Map(
-                "id" → "RmFjdGlvbjox",
+                "id" → "Faction:1",
                 "name" → "Alliance to Restore the Republic"))))
       }
 
@@ -35,7 +35,7 @@ class StarWarsObjectIdentificationSpec extends WordSpec with Matchers with Await
         val Success(doc) = QueryParser.parse(
           """
             query RebelsRefetchQuery {
-              node(id: "RmFjdGlvbjox") {
+              node(id: "Faction:1") {
                 id
                 ... on Faction {
                   name
@@ -48,7 +48,7 @@ class StarWarsObjectIdentificationSpec extends WordSpec with Matchers with Await
           Map(
             "data" → Map(
               "node" → Map(
-                "id" → "RmFjdGlvbjox",
+                "id" → "Faction:1",
                 "name" → "Alliance to Restore the Republic"))))
       }
 
@@ -67,7 +67,7 @@ class StarWarsObjectIdentificationSpec extends WordSpec with Matchers with Await
           Map(
             "data" → Map(
               "empire" → Map(
-                "id" → "RmFjdGlvbjoy",
+                "id" → "Faction:2",
                 "name" → "Galactic Empire"))))
       }
 
@@ -75,7 +75,7 @@ class StarWarsObjectIdentificationSpec extends WordSpec with Matchers with Await
         val Success(doc) = QueryParser.parse(
           """
             query EmpireRefetchQuery {
-              node(id: "RmFjdGlvbjoy") {
+              node(id: "Faction:2") {
                 id
                 ... on Faction {
                   name
@@ -88,7 +88,7 @@ class StarWarsObjectIdentificationSpec extends WordSpec with Matchers with Await
           Map(
             "data" → Map(
               "node" → Map(
-                "id" → "RmFjdGlvbjoy",
+                "id" → "Faction:2",
                 "name" → "Galactic Empire"))))
       }
 
@@ -96,7 +96,7 @@ class StarWarsObjectIdentificationSpec extends WordSpec with Matchers with Await
         val Success(doc) = QueryParser.parse(
           """
             query XWingRefetchQuery {
-              node(id: "U2hpcDox") {
+              node(id: "Ship:1") {
                 id
                 ... on Ship {
                   name
@@ -109,7 +109,7 @@ class StarWarsObjectIdentificationSpec extends WordSpec with Matchers with Await
           Map(
             "data" → Map(
               "node" → Map(
-                "id" → "U2hpcDox",
+                "id" → "Ship:1",
                 "name" → "X-Wing"))))
       }
     }

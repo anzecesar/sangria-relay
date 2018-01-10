@@ -244,7 +244,7 @@ class StarWarsConnectionSpec extends WordSpec with Matchers with AwaitSupport {
         val Success(doc) = QueryParser.parse(
           """
             query {
-              nodes(ids: ["U2hpcDox", "U2hpcDoz", "U2hpcDoxMDA=", "RmFjdGlvbjox", "U2hpcDox"]) {
+              nodes(ids: ["Ship:1", "Ship:3", "Ship:100", "Faction:1", "Ship:1"]) {
                 id
 
                 ... on Ship {
@@ -259,15 +259,15 @@ class StarWarsConnectionSpec extends WordSpec with Matchers with AwaitSupport {
             "data" → Map(
               "nodes" → Vector(
                 Map(
-                  "id" → "U2hpcDox",
+                  "id" → "Ship:1",
                   "name" → "X-Wing"),
                 Map(
-                  "id" → "U2hpcDoz",
+                  "id" → "Ship:3",
                   "name" → "A-Wing"),
                 null,
-                Map("id" → "RmFjdGlvbjox"),
+                Map("id" → "Faction:1"),
                 Map(
-                  "id" → "U2hpcDox",
+                  "id" → "Ship:1",
                   "name" → "X-Wing")))))
       }
 
@@ -275,7 +275,7 @@ class StarWarsConnectionSpec extends WordSpec with Matchers with AwaitSupport {
         val Success(doc) = QueryParser.parse(
           """
             query {
-              node(id: "RmFjdGlvbjox") {
+              node(id: "Faction:1") {
                 id
 
                 ... on Faction {
@@ -297,7 +297,7 @@ class StarWarsConnectionSpec extends WordSpec with Matchers with AwaitSupport {
             "data" → Map(
               "node" →
                 Map(
-                  "id" → "RmFjdGlvbjox",
+                  "id" → "Faction:1",
                   "name" → "Alliance to Restore the Republic",
                   "ships" → Map(
                     "edges" → Vector(
@@ -322,7 +322,7 @@ class StarWarsConnectionSpec extends WordSpec with Matchers with AwaitSupport {
         val Success(doc) = QueryParser.parse(
           """
             query {
-              nodes(ids: ["U2hpcDox", "U2hpcDoz", "RmFjdGlvbjox", "RmFjdGlvbjoy"]) {
+              nodes(ids: ["Ship:1", "Ship:3", "Faction:1", "Faction:2"]) {
                 id
 
                 ... on Ship {
@@ -348,13 +348,13 @@ class StarWarsConnectionSpec extends WordSpec with Matchers with AwaitSupport {
             "data" → Map(
               "nodes" → Vector(
                 Map(
-                  "id" → "U2hpcDox",
+                  "id" → "Ship:1",
                   "name" → "X-Wing"),
                 Map(
-                  "id" → "U2hpcDoz",
+                  "id" → "Ship:3",
                   "name" → "A-Wing"),
                 Map(
-                  "id" → "RmFjdGlvbjox",
+                  "id" → "Faction:1",
                   "name" → "Alliance to Restore the Republic",
                   "ships" → Map(
                     "edges" → Vector(
@@ -374,7 +374,7 @@ class StarWarsConnectionSpec extends WordSpec with Matchers with AwaitSupport {
                         "node" → Map(
                           "name" → "Home One"))))),
                 Map(
-                  "id" → "RmFjdGlvbjoy",
+                  "id" → "Faction:2",
                   "name" → "Galactic Empire",
                   "ships" → Map(
                     "edges" → Vector(

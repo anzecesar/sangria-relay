@@ -32,7 +32,7 @@ class StarWarsMutationSpec extends WordSpec with Matchers with AwaitSupport {
       val vars = mapVars(
         "input" → Map(
           "shipName" → "B-Wing",
-          "factionId" → "RmFjdGlvbjox",
+          "factionId" → "Faction:1",
           "clientMutationId" → "abcde"
         )
       )
@@ -42,7 +42,7 @@ class StarWarsMutationSpec extends WordSpec with Matchers with AwaitSupport {
           "data" → Map(
             "introduceShip" → Map(
               "ship" → Map(
-                "id" → "U2hpcDo5",
+                "id" → "Ship:9",
                 "name" → "B-Wing"
               ),
               "faction" → Map(
